@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+	<title>Parkinson's Remote Monitoring</title>
+	<script type="text/javascript" src="canvas.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+	
+	<header>
+		
+		<!--<div class="button-wrapper">
+			<i type="button" class="fa fa-volume-up btn-lg btn-light"></i>
+			<img style="max-width: 50px;" src="assets/ringlogo.png">
+			<i type="button" class="fa fa-home btn-lg btn-light"></i>
+
+		</div>-->
+		<div class="button-wrapper">
+			<i type="button" class="fa fa-volume-up btn-lg btn-light"></i>
+		</div>
+	</header>
+
+	<main>
+		<div class="col-md-12 text-center h-100 d-flex flex-column">
+			<div>
+				<h2>Use your stylus to draw a spiral as quick as possible</h2>
+			</div>
+			
+			<div class="row h-100 justify-content-center">
+			    <div id="canvasDiv" class="align-self-center h-75 w-100">
+			    	<!--<img class="image mw-100" src="assets/spiral.png">-->
+			    </div>
+			</div>
+	</div>
+
+
+	</main>
+
+	<footer>
+		<div class="button-wrapper">
+			<button type="button" class="btn btn-light btn-lg">Restart</button>
+			<span class = "label label-default">Step 1/4</span>
+			<button type="button" class="btn btn-success btn-lg">Done</button>
+		</div>
+	</footer>
+	
+
+
+	<script type="text/javascript"> 
+		/*window.load()
+		$(document).ready(function() {
+    	 	prepareCanvas();
+    	});*/
+
+    	window.onload = (event) => {
+		  prepareCanvas();
+		};
+	</script>
+
+</body>
+
+
+</html>
