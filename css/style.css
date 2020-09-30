@@ -25,7 +25,7 @@ header {
 }
 
 main {
-	height:85vh;
+	height:80vh;
 	width: 100vw;
 	background-color: white;
 }
@@ -52,10 +52,10 @@ canvas {
 
 #canvasDiv {
 	/*border: 2px dashed black;*/
-	background-image: url("../assets/spiral.png");
+	/*background-image: url("../assets/spiral.png");
 	background-position: center;
 	background-size: 45vmax 90%;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat;*/
 }
 
 

@@ -8,11 +8,18 @@ var canvasWidth = 100;
 var canvasHeight = 100;
 var padding = 25;
 var lineWidth = 2;
+var spiralImage = new Image();
 
 var clickX = new Array();
 var clickY = new Array();
 var clickDrag = new Array();
 var paint;
+
+
+function resourceLoaded()
+{
+	redraw();
+}
 
 function prepareCanvas()
 {
@@ -28,8 +35,10 @@ function prepareCanvas()
 	}
 	context = canvas.getContext("2d");
 
+	spiralImage.onload = function() { resourceLoaded(); 
+	};
+	spiralImage.src = "assets/spiral.png";	
 
-	
 	window.addEventListener('resize', resizeCanvas, false);
 
     function resizeCanvas() {
@@ -108,6 +117,11 @@ function addClick(x, y, dragging)
 function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
   
+  var spiral_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
+
+  context.drawImage(spiralImage, context.canvas.width / 2 - spiral_size / 2,
+        context.canvas.height / 2 -  spiral_size / 2, spiral_size, spiral_size);
+
   context.strokeStyle = "#df4b26";
   context.lineJoin = "round";
   context.lineWidth = 2;
