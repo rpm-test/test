@@ -8,7 +8,6 @@
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 	<link rel="stylesheet" href="css/style.css">
 	<title>Parkinson's Remote Monitoring</title>
-	<script type="text/javascript" src="canvas.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -34,7 +33,7 @@
 	<main>
 		<div class="col-md-12 text-center h-100 d-flex flex-column">
 			<div>
-				<h2 id="message">Use your stylus to draw a spiral as quick as possible</h2>
+				<h2 id="message">Use your stylus to trace the spiral</h2>
 			</div>
 			
 			<div class="row h-100 justify-content-center">
@@ -50,25 +49,16 @@
 	<footer>
 		<div class="button-wrapper">
 			<button id="restart" onclick="restart()" type="button" class="btn btn-light btn-lg">Restart</button>
-			<span class = "label label-default">Step 1/4</span>
-			<button id="done" onclick="done()" type="button" class="btn btn-success btn-lg">Done</button>
+			<span class = "label label-default">Step 1/7</span>
+			<button id="next" onclick="next()" type="button" class="btn btn-success btn-lg">Next</button>
 		</div>
 	</footer>
-	
 
-
-	<script type="text/javascript"> 
-		/*window.load()
-		$(document).ready(function() {
-    	 	prepareCanvas();
-    	});*/
-
-    	window.onload = (event) => {
-		  prepareCanvas();
-		};
-
+	<script type="text/javascript" src="main.js">
 		
 	</script>
+	
+
 
 </body>
 
