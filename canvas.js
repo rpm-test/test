@@ -9,11 +9,13 @@ var canvasHeight = 100;
 var padding = 25;
 var lineWidth = 2;
 var spiralImage = new Image();
-
+var waveImage = new Image();
 var clickX = new Array();
 var clickY = new Array();
 var clickDrag = new Array();
 var paint;
+
+var curTest = "spiral";
 
 
 function resourceLoaded()
@@ -38,6 +40,10 @@ function prepareCanvas()
 	spiralImage.onload = function() { resourceLoaded(); 
 	};
 	spiralImage.src = "assets/spiral.png";	
+
+	waveImage.onload = function() { resourceLoaded(); 
+	};
+	waveImage.src = "assets/wave.png";	
 
 	window.addEventListener('resize', resizeCanvas, false);
 
@@ -106,6 +112,26 @@ function prepareCanvas()
 
 }
 
+function clearCanvas()
+{
+	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+	clickX = [];
+	clickY = [];
+	clickDrag = [];
+
+	if (curTest == "spiral") {
+	  	var spiral_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
+
+	  	context.drawImage(spiralImage, context.canvas.width / 2 - spiral_size / 2,
+	        context.canvas.height / 2 -  spiral_size / 2, spiral_size, spiral_size);
+	  } else if (curTest == "wave") {
+	  	var wave_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
+
+	  	context.drawImage(waveImage, context.canvas.width / 2 - wave_size / 2,
+	        context.canvas.height / 2 -  wave_size / 2, wave_size, wave_size);
+	  }
+}
+
 
 function addClick(x, y, dragging)
 {
@@ -117,10 +143,18 @@ function addClick(x, y, dragging)
 function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
   
-  var spiral_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
+  if (curTest == "spiral") {
+  	var spiral_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
 
-  context.drawImage(spiralImage, context.canvas.width / 2 - spiral_size / 2,
+  	context.drawImage(spiralImage, context.canvas.width / 2 - spiral_size / 2,
         context.canvas.height / 2 -  spiral_size / 2, spiral_size, spiral_size);
+  } else if (curTest == "wave") {
+  	var wave_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
+
+  	context.drawImage(waveImage, context.canvas.width / 2 - wave_size / 2,
+        context.canvas.height / 2 -  wave_size / 2, wave_size, wave_size);
+  }
+  
 
   context.strokeStyle = "#df4b26";
   context.lineJoin = "round";
@@ -138,4 +172,18 @@ function redraw(){
      context.stroke();
   }
 }
+
+function done() {
+	console.log("clicked");
+	clearCanvas();
+	curTest = "wave";
+	redraw();
+}
+
+function restart() {
+	clearCanvas();
+}
+
+
+
 

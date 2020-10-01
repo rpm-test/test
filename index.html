@@ -34,7 +34,7 @@
 	<main>
 		<div class="col-md-12 text-center h-100 d-flex flex-column">
 			<div>
-				<h2>Use your stylus to draw a spiral as quick as possible</h2>
+				<h2 id="message">Use your stylus to draw a spiral as quick as possible</h2>
 			</div>
 			
 			<div class="row h-100 justify-content-center">
@@ -49,9 +49,9 @@
 
 	<footer>
 		<div class="button-wrapper">
-			<button type="button" class="btn btn-light btn-lg">Restart</button>
+			<button id="restart" onclick="restart()" type="button" class="btn btn-light btn-lg">Restart</button>
 			<span class = "label label-default">Step 1/4</span>
-			<button type="button" class="btn btn-success btn-lg">Done</button>
+			<button id="done" onclick="done()" type="button" class="btn btn-success btn-lg">Done</button>
 		</div>
 	</footer>
 	
@@ -66,6 +66,8 @@
     	window.onload = (event) => {
 		  prepareCanvas();
 		};
+
+		
 	</script>
 
 </body>
