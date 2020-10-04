@@ -45,7 +45,7 @@ function login() {
 	        user["firstname"] = doc.data()["firstname"];
 	        user["lastname"] = doc.data()["lastname"];
 	        user["phone"] = doc.data()["phone"];
-	        user["doctor"] = doc.data()["doctor"];
+	        user["doctor"] = doc.data()["doctor_id"];
 	        localStorage.setItem('user', JSON.stringify(user));
 	        checkLogin();
 	    });

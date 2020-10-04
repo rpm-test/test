@@ -18,6 +18,9 @@ var paint;
 var curTest = "spiral";
 var testCount = 0;
 
+var curReport = "";
+var reportData = {};
+
 
 var firebaseConfig = {
 	"apiKey": "AIzaSyCGvKK4jxIjZnWdeCJRQwnERv-CnXtyGPs",
@@ -28,7 +31,9 @@ var firebaseConfig = {
 }
 
 firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
 var storage = firebase.storage();
+var storageRef = storage.ref()
 
 
 var messages = {
@@ -45,9 +50,7 @@ var messages = {
 
 var tests = ["spiral", "wave", "ft_left", "ft_right", "dysk", "audio", "updrs"]
 
-window.onload = (event) => {
-	prepareCanvas();
-};
+
 
 
 function resourceLoaded()
@@ -172,7 +175,7 @@ function prepareFTCanvas()
     function resizeCanvas() {
             canvas.width = canvasDiv.offsetWidth;
             canvas.height = canvasDiv.offsetHeight;
-            redraw_FT()
+            redraw_FT();
     }
     resizeCanvas();
 
@@ -183,8 +186,10 @@ function prepareFTCanvas()
 	  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop - header[0].offsetHeight);
 	  if (mouseX > canvas.width/2 - 75 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
 			redraw_FT("left");
+			setTimeout(function(){ redraw_FT() }, 300);
 		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 75 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
 			redraw_FT("right");
+			setTimeout(function(){ redraw_FT() }, 300);
 		} else {
 			redraw_FT();
 		}
@@ -200,8 +205,10 @@ function prepareFTCanvas()
 
 		if (mouseX > canvas.width/2 - 75 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
 			redraw_FT("left");
+			setTimeout(function(){ redraw_FT() }, 300);
 		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 75 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
 			redraw_FT("right");
+			setTimeout(function(){ redraw_FT() }, 300);
 		} else {
 			redraw_FT();
 		}
@@ -306,9 +313,57 @@ function redraw(drawBackground){
   }
 }
 
+
+// LOGIC
+
+function createReport() {
+	var user = JSON.parse(localStorage.getItem('user'));
+
+	console.log(user);
+
+	reportData = {
+		"created": firebase.firestore.Timestamp.now()
+	}
+
+	db.collection('doctors')
+	.doc(user["doctor"])
+	.collection('patients')
+	.doc(user["id"])
+	.collection('reports')
+	.add(reportData)
+	.then(function(docRef) {
+	    curReport = docRef.id;
+	})
+	.catch(function(error) {
+	    console.error("Error adding document: ", error);
+	});
+}
+
+function updateReport() {
+	var user = JSON.parse(localStorage.getItem('user'));
+
+	db.collection('doctors')
+	.doc(user["doctor"])
+	.collection('patients')
+	.doc(user["id"])
+	.collection('reports')
+	.doc(curReport)
+	.set(reportData)
+	.then(function(docRef) {
+	    console.log("updated")
+	})
+	.catch(function(error) {
+	    console.error("Error adding document: ", error);
+	});
+}
+
+
+
 function uploadFirebase(test, file, params) {
-
-
+	var user = JSON.parse(localStorage.getItem('user'));
+	var refString = user["id"] + "/" + curReport + "/" + test + ".jpg";
+	var uploadRef = storageRef.child(refString);
+	return uploadRef.putString(file.src, 'data_url');
 }
 
 
@@ -322,14 +377,25 @@ function completeCurrent() {
 			"clickY": clickY,
 			"time": 5
 		}
-		uploadFirebase(curTest, img, );
+		uploadFirebase(curTest, img, params).then(function(snapshot) {
+		  	snapshot.ref.getDownloadURL().then(function(downloadURL) {
+		  		reportData["spiral"] = downloadURL;
+				updateReport();
+	  		});
+		});
 		clearCanvas();
 	}
 	if (curTest == "wave") {
 		redraw(false);
 		var img = new Image();
 		img.src = context.canvas.toDataURL();
-		uploadFirebase(curTest, img);
+		params = {}
+		uploadFirebase(curTest, img, params).then(function(snapshot) {
+		  	snapshot.ref.getDownloadURL().then(function(downloadURL) {
+		  		reportData["wave"] = downloadURL;
+				updateReport();
+	  		});
+		});
 		clearCanvas();
 	}
 	if (curTest == "ft_left") {
@@ -373,6 +439,23 @@ function next() {
 function restart() {
 	clearCanvas();
 }
+
+function checkLogin(){
+	if (!localStorage.getItem('user')) {
+		window.location.replace("/");
+	}
+}
+
+window.onload = (event) => {
+	checkLogin();
+	createReport();
+	prepareCanvas();
+};
+
+/*
+window.onunload = function() {
+     
+}*/
 
 
 
