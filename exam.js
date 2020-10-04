@@ -1,4 +1,4 @@
-
+ 
 
 var canvas;
 var context;
@@ -17,6 +17,19 @@ var paint;
 
 var curTest = "spiral";
 var testCount = 0;
+
+
+var firebaseConfig = {
+	"apiKey": "AIzaSyCGvKK4jxIjZnWdeCJRQwnERv-CnXtyGPs",
+    "authDomain": "testrpm-e5b42.firebaseapp.com",
+    "databaseURL": "https://testrpm-e5b42.firebaseio.com",
+    "projectId": "testrpm-e5b42",
+    "storageBucket": "testrpm-e5b42.appspot.com"
+}
+
+firebase.initializeApp(firebaseConfig);
+var storage = firebase.storage();
+
 
 var messages = {
 		"spiral" : "Use your stylus to trace the spiral",
@@ -168,7 +181,13 @@ function prepareFTCanvas()
 	  var mouseY = e.pageY - this.offsetTop;
 			
 	  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop - header[0].offsetHeight);
-	  redraw_FT();
+	  if (mouseX > canvas.width/2 - 75 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
+			redraw_FT("left");
+		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 75 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
+			redraw_FT("right");
+		} else {
+			redraw_FT();
+		}
 	});
 
 	canvas.addEventListener("touchstart", function(e)
@@ -178,7 +197,15 @@ function prepareFTCanvas()
 			mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop - header[0].offsetHeight;
 		
 		addClick(mouseX, mouseY, false);
-		redraw_FT();
+
+		if (mouseX > canvas.width/2 - 75 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
+			redraw_FT("left");
+		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 75 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
+			redraw_FT("right");
+		} else {
+			redraw_FT();
+		}
+		
 	}, false);
 
 
@@ -204,6 +231,10 @@ function clearCanvas()
 
 	  	context.drawImage(waveImage, context.canvas.width / 2 - wave_size / 2,
 	        context.canvas.height / 2 -  wave_size / 2, wave_size, wave_size);
+	  } else if (curTest == "ft_left" || curTest == "ft_right") {
+	  	context.fillStyle ='red';
+  		context.fillRect(canvas.width/2 - 75, canvas.height/2 - 25, 50, 50);
+  		context.fillRect(canvas.width/2 + 25, canvas.height/2 - 25, 50, 50);
 	  }
 
 }
@@ -216,11 +247,24 @@ function addClick(x, y, dragging)
   clickDrag.push(dragging);
 }
 
-function redraw_FT() {
+function redraw_FT(sel) {
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
   context.fillStyle ='red';
-  context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
-  context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
+  if (sel == "left") {
+  	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
+  	context.fillStyle ='blue';
+  	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
+  }
+  else if (sel == "right") {
+  	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
+  	context.fillStyle ='blue';
+  	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
+  } else {
+  	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
+  	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
+  }
+  
+  
 }
 
 function redraw(drawBackground){
@@ -264,6 +308,7 @@ function redraw(drawBackground){
 
 function uploadFirebase(test, file, params) {
 
+
 }
 
 
@@ -272,7 +317,12 @@ function completeCurrent() {
 		redraw(false);
 		var img = new Image();
 		img.src = context.canvas.toDataURL();
-		uploadFirebase(curTest, img);
+		params = {
+			"clickX": clickX,
+			"clickY": clickY,
+			"time": 5
+		}
+		uploadFirebase(curTest, img, );
 		clearCanvas();
 	}
 	if (curTest == "wave") {
@@ -307,6 +357,7 @@ function loadNext() {
 		prepareFTCanvas();
 	}
 	else if (curTest == "dysk") {
+
 	}
 	else if (curTest == "audio") {
 	}

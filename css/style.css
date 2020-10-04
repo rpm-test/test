@@ -34,9 +34,10 @@ footer {
 	height:10vh;
 	width: 100vw;
 	background-color: white;
-	/*display:flex;
-	justify-content: space-between;
-	align-items: stretch;*/
+	display:flex;
+	justify-content: center;
+	text-align:center;
+	/*align-items: stretch;*/
 }
 
 .button-wrapper {

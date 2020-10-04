@@ -15,7 +15,7 @@
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  	<script src="https://www.gstatic.com/firebasejs/7.21.1/firebase-firestore.js"></script>
+  	<script src="https://www.gstatic.com/firebasejs/7.21.1/firebase-storage.js"></script>
 </head>
 
 <body>
@@ -37,40 +37,15 @@
 	<main>
 		<div class="col-md-12 text-center h-100 d-flex flex-column">
 			<div>
-				<h2 id="message">Welcome to PD Monitor</h2>
+				<h2 id="message">Use your stylus to trace the spiral</h2>
 			</div>
 			
 			<div class="row h-100 justify-content-center">
-			    <!--<div id="canvasDiv" class="align-self-center h-75 w-100">
+			    <div id="canvasDiv" class="align-self-center h-75 w-100">
 			    	
-			    </div>-->
-
-			    <div id="phoneDiv" class="align-self-center h-50 w-100">
-			    	<label for="phone">Enter your phone number:</label>
-
-					<input type="tel" id="phone" name="phone"
-					       pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-					       required>
-					<div>
-						<small>Format: 123-456-7890</small>
-					</div>
-
-					<div style="height:50px; width: 100%;"></div>
-
-					<button style="width:50%" id="login" onclick="login()" type="button" class="btn btn-primary btn-lg">Login</button>
 			    </div>
 
-			    <div id="startDiv" class="align-self-center h-50 w-100">
-
-					<button id="start" onclick="location.href='/exam.html';" type="button" class="btn btn-success btn-lg">Start Exam</button>
-
-					<div style="height:50px; width: 100%;"></div>
-
-					<button id="community" type="button" class="btn btn-primary btn-lg">Community Discussion</button>
-			    </div>
-
-
-			    
+			</div>
 		</div>
 	</div>
 
@@ -78,10 +53,14 @@
 	</main>
 
 	<footer>
-		<small>© OneRing 2020</small>
-	</footer> 
+		<div class="button-wrapper">
+			<button id="restart" onclick="restart()" type="button" class="btn btn-light btn-lg">Restart</button>
+			<span class = "label label-default">Step 1/7</span>
+			<button id="next" onclick="next()" type="button" class="btn btn-success btn-lg">Next</button>
+		</div>
+	</footer>
 
-	<script type="text/javascript" src="auth.js">
+	<script type="text/javascript" src="exam.js">
 		
 	</script>
 	
