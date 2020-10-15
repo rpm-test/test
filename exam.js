@@ -325,7 +325,7 @@ function prepareMotionCanvas() {
 	                window.addEventListener("devicemotion", motion, true);
 	                context.font = '20px sans-serif';
 					context.fillStyle = "black";
-					context.fillText('Recording motion...', canvas.width/2 - 50, canvas.height/2);
+					context.fillText('Recording motion...', canvas.width/2 - 75, canvas.height/2);
 	                setTimeout(finishMotion, 10000);
 	            }
 	        })
@@ -333,7 +333,7 @@ function prepareMotionCanvas() {
 			window.addEventListener("devicemotion", motion, true);
 			context.font = '20px sans-serif';
 			context.fillStyle = "black";
-			context.fillText('Recording motion...', canvas.width/2 - 50, canvas.height/2);
+			context.fillText('Recording motion...', canvas.width/2 - 75, canvas.height/2);
 			setTimeout(finishMotion, 10000);
 		}
 	}else{
