@@ -662,7 +662,7 @@ function restart() {
 
 function checkLogin(){
 	if (!localStorage.getItem('user')) {
-		window.location.replace("/");
+		window.location.replace("/test/");
 	}
 }
 
