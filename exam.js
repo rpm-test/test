@@ -303,6 +303,15 @@ function prepareMotionCanvas() {
 	var header = document.getElementsByTagName('header');
 	var canvasDiv = document.getElementById('canvasDiv');
 	canvasDiv.innerHTML = "";
+	canvas = document.createElement('canvas');
+	canvas.setAttribute('width', canvasDiv.offsetWidth);
+	canvas.setAttribute('height', canvasDiv.offsetHeight);
+	canvas.setAttribute('id', 'canvas');
+	canvasDiv.appendChild(canvas);
+	if(typeof G_vmlCanvasManager != 'undefined') {
+		canvas = G_vmlCanvasManager.initElement(canvas);
+	}
+	context = canvas.getContext("2d");
 
 	console.log("Preparing motion listener")
 
@@ -338,7 +347,10 @@ function motion(event) {
     var z = event.accelerationIncludingGravity.z;
 
     var motionArray = [x, y, z];
-    console.log(event.interval);
+
+    if (!motionData["interval"]) {
+    	motionData["interval"] = event.interval;
+    }
 
     motionData["data"].push(motionArray);
 } 
