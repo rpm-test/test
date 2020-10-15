@@ -303,7 +303,17 @@ function prepareMotionCanvas() {
 	console.log("Preparing motion listener")
 
 	if(window.DeviceMotionEvent){
-	  window.addEventListener("devicemotion", motion, true);
+		if (typeof( window.DeviceMotionEvent.requestPermission ) === "function") {
+			window.DeviceMotionEvent.requestPermission()
+	            .then( response => {
+	            // (optional) Do something after API prompt dismissed.
+	            if ( response == "granted" ) {
+	                window.addEventListener("devicemotion", motion, true);
+	            }
+	        })
+		} else {
+			window.addEventListener("devicemotion", motion, true);
+		}
 	}else{
 	  console.log("DeviceMotionEvent is not supported");
 	}
