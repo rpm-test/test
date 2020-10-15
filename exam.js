@@ -572,7 +572,7 @@ function completeCurrent() {
 
 		dataBlob = new Blob([JSON.stringify(params)]);
 		
-		uploadFirebase(curTest, img, params).then(function(snapshot) {
+		uploadFirebaseImage(curTest, img, params).then(function(snapshot) {
 		  	snapshot.ref.getDownloadURL().then(function(downloadURL) {
 		  		reportData["spiralWave"]["wave"]["imageURL"] = downloadURL;
 				uploadFirebaseData(curTest, dataBlob, ".txt").then(function(snapshot) {
