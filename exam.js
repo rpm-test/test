@@ -21,6 +21,13 @@ var testCount = 0;
 var curReport = "";
 var reportData = {};
 
+var ft_sel = "";
+
+var clickTimes = new Array();
+
+var drawTimer;
+var timeDraw = 0;
+
 
 var firebaseConfig = {
 	"apiKey": "AIzaSyCGvKK4jxIjZnWdeCJRQwnERv-CnXtyGPs",
@@ -66,6 +73,7 @@ function prepareCanvas()
 	canvas.setAttribute('width', canvasDiv.offsetWidth);
 	canvas.setAttribute('height', canvasDiv.offsetHeight);
 	canvas.setAttribute('id', 'canvas');
+	//canvas.setAttribute('tabindex', '1');
 	canvasDiv.appendChild(canvas);
 	if(typeof G_vmlCanvasManager != 'undefined') {
 		canvas = G_vmlCanvasManager.initElement(canvas);
@@ -97,6 +105,9 @@ function prepareCanvas()
 			
 	  paint = true;
 	  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop - header[0].offsetHeight);
+	  drawTimer = setInterval(function(){
+	  	timeDraw++;
+	  }, 500);
 	  redraw(true);
 	});
 
@@ -109,10 +120,12 @@ function prepareCanvas()
 
 	$('#canvas').mouseup(function(e){
 	  paint = false;
+	  clearInterval(drawTimer);
 	});
 
 	$('#canvas').mouseleave(function(e){
 	  paint = false;
+	  clearInterval(drawTimer);
 	});
 
 	canvas.addEventListener("touchstart", function(e)
@@ -123,6 +136,9 @@ function prepareCanvas()
 		
 		paint = true;
 		addClick(mouseX, mouseY, false);
+		drawTimer = setInterval(function(){
+		  	timeDraw++;
+		  }, 500);
 		redraw(true);
 	}, false);
 
@@ -140,12 +156,35 @@ function prepareCanvas()
 
 	canvas.addEventListener("touchend", function(e){
 		paint = false;
+		clearInterval(drawTimer);
 	  	redraw(true);
 	}, false);
 
 	canvas.addEventListener("touchcancel", function(e){
 		paint= false;
+		clearInterval(drawTimer);
 	}, false);
+
+	/*
+
+	window.addEventListener('keydown', (e) => {
+		console.log(e.key);
+		if (e.key === "c") {
+			paint = true;
+			drawTimer = setInterval(function(){
+			  	timeDraw++;
+			  }, 1000);
+			  redraw(true);
+		}
+	});
+
+	window.addEventListener('keyup', (e) => {
+		if (e.key === "c") {
+			paint = false;
+			clearInterval(drawTimer);
+		  	redraw(true);
+		}
+	});*/
 
 }
 
@@ -185,14 +224,33 @@ function prepareFTCanvas()
 			
 	  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop - header[0].offsetHeight);
 	  if (mouseX > canvas.width/2 - 75 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
-			redraw_FT("left");
-			setTimeout(function(){ redraw_FT() }, 300);
+	  		if (ft_sel !== "left") {
+	  			var d = new Date();
+				var n = d.getTime();
+	  			clickTimes.push(n);
+	  			ft_sel = "left";
+	  		}
+						
 		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 75 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
-			redraw_FT("right");
-			setTimeout(function(){ redraw_FT() }, 300);
+			if (ft_sel !== "right") {
+	  			var d = new Date();
+				var n = d.getTime();
+	  			clickTimes.push(n);
+	  			ft_sel = "right";
+	  		}
+		} 
+
+		if (clickTimes.length > 20) {
+			context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+			$('#next').prop('disabled', false);
+			context.font = '40px sans-serif';
+			context.fillStyle = "black";
+  			context.fillText('Done!', canvas.width/2 - 50, canvas.height/2);
 		} else {
 			redraw_FT();
 		}
+
+	  
 	});
 
 	canvas.addEventListener("touchstart", function(e)
@@ -204,19 +262,58 @@ function prepareFTCanvas()
 		addClick(mouseX, mouseY, false);
 
 		if (mouseX > canvas.width/2 - 75 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
-			redraw_FT("left");
-			setTimeout(function(){ redraw_FT() }, 300);
+	  		if (ft_sel !== "left") {
+	  			var d = new Date();
+				var n = d.getTime();
+	  			clickTimes.push(n);
+	  			ft_sel = "left";
+	  		}
+						
 		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 75 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
-			redraw_FT("right");
-			setTimeout(function(){ redraw_FT() }, 300);
+			if (ft_sel !== "right") {
+	  			var d = new Date();
+				var n = d.getTime();
+	  			clickTimes.push(n);
+	  			ft_sel = "right";
+	  		}
+		} 
+
+		if (clickTimes.length > 20) {
+			context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+			$('#next').prop('disabled', false);
+			context.font = '40px sans-serif';
+			context.fillStyle = "black";
+  			context.fillText('Done!', canvas.width/2 - 50, canvas.height/2);
 		} else {
 			redraw_FT();
 		}
+
+	  	
 		
 	}, false);
 
 
 }
+
+function prepareMotionCanvas() {
+	var header = document.getElementsByTagName('header');
+	var canvasDiv = document.getElementById('canvasDiv');
+	canvasDiv.innerHTML = "";
+
+	if(window.DeviceMotionEvent){
+	  window.addEventListener("devicemotion", motion, false);
+	}else{
+	  console.log("DeviceMotionEvent is not supported");
+	}
+}
+
+function motion(event) {
+	var x = event.accelerationIncludingGravity.x;
+    var y = event.accelerationIncludingGravity.y;
+    var z = event.accelerationIncludingGravity.z;
+
+    console.log(x + " " + y + " " + z);
+} 
 
 
 
@@ -227,6 +324,8 @@ function clearCanvas()
 	clickX = [];
 	clickY = [];
 	clickDrag = [];
+	timeDraw = 0;
+	clickTimes = [];
 
 	if (curTest == "spiral") {
 	  	var spiral_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
@@ -254,15 +353,15 @@ function addClick(x, y, dragging)
   clickDrag.push(dragging);
 }
 
-function redraw_FT(sel) {
+function redraw_FT() {
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
   context.fillStyle ='red';
-  if (sel == "left") {
+  if (ft_sel == "left") {
   	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
   	context.fillStyle ='blue';
   	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
   }
-  else if (sel == "right") {
+  else if (ft_sel == "right") {
   	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
   	context.fillStyle ='blue';
   	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
@@ -322,7 +421,67 @@ function createReport() {
 	console.log(user);
 
 	reportData = {
-		"created": firebase.firestore.Timestamp.now()
+		"created": firebase.firestore.Timestamp.now(),
+		"overview": {
+			"medicationTimes": "",
+			"tremorScore": "",
+			"bradykinesiaScore": "",
+			"dyskinesiaScore": ""
+		},
+		"spiralWave": {
+			"spiral": {
+				"imageURL": "",
+				"statsURL": "",
+				"completionTime": "",
+				"tremorScore": "",
+				"bradykinesiaScore": ""
+			},
+			"wave": {
+				"imageURL": "",
+				"statsURL": "",
+				"completionTime": "",
+				"tremorScore": "",
+				"bradykinesiaScore": ""
+			},
+			"combined": {
+				"completionTime": "",
+				"tremorScore": "",
+				"bradykinesiaScore": ""
+			}
+		},
+		"fingerTapping": {
+			"left": {
+				"tapTimes": "",
+				"averageTimeBetweenTaps": "",
+				"bradykinesiaScore": ""
+			},
+			"right": {
+				"tapTimes": "",
+				"averageTimeBetweenTaps": "",
+				"bradykinesiaScore": ""
+			},
+			"combined": {
+				"averageTimeBetweenTaps": "",
+				"bradykinesiaScore": ""
+			}
+		},
+		"restMotion": {
+			"motionURL": "",
+			"powerData": "",
+			"dyskinesiaScore": ""
+		},
+		"patientNotes": {
+			"audioURL": "",
+			"transcript": ""
+		},
+		"updrs": {
+			"videoURL": "",
+			"currentTasks" : ""
+		},
+		"review": {
+			"timeSpent": "",
+			"notes": ""
+		}
 	}
 
 	db.collection('doctors')
@@ -359,11 +518,18 @@ function updateReport() {
 
 
 
-function uploadFirebase(test, file, params) {
+function uploadFirebaseImage(test, file) {
 	var user = JSON.parse(localStorage.getItem('user'));
 	var refString = user["id"] + "/" + curReport + "/" + test + ".jpg";
 	var uploadRef = storageRef.child(refString);
 	return uploadRef.putString(file.src, 'data_url');
+}
+
+function uploadFirebaseData(test, file, extension) {
+	var user = JSON.parse(localStorage.getItem('user'));
+	var refString = user["id"] + "/" + curReport + "/" + test + extension;
+	var uploadRef = storageRef.child(refString);
+	return uploadRef.put(file);
 }
 
 
@@ -375,12 +541,21 @@ function completeCurrent() {
 		params = {
 			"clickX": clickX,
 			"clickY": clickY,
-			"time": 5
+			"time": timeDraw
 		}
-		uploadFirebase(curTest, img, params).then(function(snapshot) {
+
+		dataBlob = new Blob([JSON.stringify(params)]);
+		
+		uploadFirebaseImage(curTest, img).then(function(snapshot) {
 		  	snapshot.ref.getDownloadURL().then(function(downloadURL) {
-		  		reportData["spiral"] = downloadURL;
-				updateReport();
+		  		reportData["spiralWave"]["spiral"]["imageURL"] = downloadURL;
+		  		uploadFirebaseData(curTest, dataBlob, ".txt").then(function(snapshot) {
+		  			snapshot.ref.getDownloadURL().then(function(downloadURL) {
+		  				reportData["spiralWave"]["spiral"]["statsURL"] = downloadURL;
+		  				updateReport();
+		  			});
+		  		});
+				
 	  		});
 		});
 		clearCanvas();
@@ -389,45 +564,84 @@ function completeCurrent() {
 		redraw(false);
 		var img = new Image();
 		img.src = context.canvas.toDataURL();
-		params = {}
+		params = {
+			"clickX": clickX,
+			"clickY": clickY,
+			"time": timeDraw
+		}
+
+		dataBlob = new Blob([JSON.stringify(params)]);
+		
 		uploadFirebase(curTest, img, params).then(function(snapshot) {
 		  	snapshot.ref.getDownloadURL().then(function(downloadURL) {
-		  		reportData["wave"] = downloadURL;
-				updateReport();
+		  		reportData["spiralWave"]["wave"]["imageURL"] = downloadURL;
+				uploadFirebaseData(curTest, dataBlob, ".txt").then(function(snapshot) {
+		  			snapshot.ref.getDownloadURL().then(function(downloadURL) {
+		  				reportData["spiralWave"]["wave"]["statsURL"] = downloadURL;
+		  				updateReport();
+		  			});
+		  		});
 	  		});
 		});
 		clearCanvas();
 	}
 	if (curTest == "ft_left") {
+		reportData["fingerTapping"]["left"]["tapTimes"] = clickTimes;
+		updateReport();
 		clearCanvas();
 	}
 	if (curTest == "ft_right") {
+		reportData["fingerTapping"]["right"]["tapTimes"] = clickTimes; 
+		updateReport();
 		clearCanvas();
 	}
+	if (curTest == "dysk") {
+
+	}
+	if (curTest == "audio") {
+
+	}
+	if (curTest == "video") {
+
+	}
 	testCount++;
+	if (testCount >= tests.length) {
+		reportData["completed"] = "true";
+		updateReport();
+	}
 }
 
 function loadNext() {
 	curTest = tests[testCount];
+	$("#step").html("Step " + (testCount + 1) + "/7");
 	$("#message").html(messages[curTest]);
 	if (testCount == tests.length - 1) {
 		$("#next").html("Done");
 	}
+
 	if (curTest == "spiral" || curTest == "wave") {
 		redraw(true);
 	}
 	else if (curTest == "ft_left") {
+		$('#next').prop('disabled', true);
 		prepareFTCanvas();
 	}
 	else if (curTest == "ft_right") {
+		$('#next').prop('disabled', true);
 		prepareFTCanvas();
 	}
 	else if (curTest == "dysk") {
+		$('#next').prop('disabled', true);
 
 	}
 	else if (curTest == "audio") {
+
 	}
 	else if (curTest == "video") {
+
+	}
+	else {
+
 	}
 }
 
@@ -438,6 +652,9 @@ function next() {
 
 function restart() {
 	clearCanvas();
+	if (curTest == "ft_left" || curTest == "ft_right") {
+	  	$('#next').prop('disabled', true);
+	}
 }
 
 function checkLogin(){
