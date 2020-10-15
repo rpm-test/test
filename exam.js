@@ -21,6 +21,10 @@ var testCount = 0;
 var curReport = "";
 var reportData = {};
 
+var motionData = {
+	"data": new Array()
+};
+
 var ft_sel = "";
 
 var clickTimes = new Array();
@@ -46,8 +50,8 @@ var storageRef = storage.ref()
 var messages = {
 		"spiral" : "Use your stylus to trace the spiral",
 		"wave" : "Use your stylus to trace the wave",
-		"ft_right" : "Use your right index finger to repeatedly tap both squares",
-		"ft_left" : "Use your left index finger to repeatedly tap both squares",
+		"ft_right" : "Use your right index finger to alternately tap both squares",
+		"ft_left" : "Use your left index finger to alternately tap both squares",
 		"dysk" : "Hold your phone at rest for 10 seconds",
 		"audio" : "Tell your doctor about your symptoms and medications",
 		"updrs" : "Sit back arms length and follow directions"
@@ -303,16 +307,25 @@ function prepareMotionCanvas() {
 	console.log("Preparing motion listener")
 
 	if(window.DeviceMotionEvent){
+		console.log(window.DeviceMotionEvent.interval);
 		if (typeof( window.DeviceMotionEvent.requestPermission ) === "function") {
 			window.DeviceMotionEvent.requestPermission()
 	            .then( response => {
 	            // (optional) Do something after API prompt dismissed.
 	            if ( response == "granted" ) {
 	                window.addEventListener("devicemotion", motion, true);
+	                context.font = '20px sans-serif';
+					context.fillStyle = "black";
+					context.fillText('Recording motion...', canvas.width/2 - 50, canvas.height/2);
+	                setTimeout(finishMotion, 10000);
 	            }
 	        })
 		} else {
 			window.addEventListener("devicemotion", motion, true);
+			context.font = '20px sans-serif';
+			context.fillStyle = "black";
+			context.fillText('Recording motion...', canvas.width/2 - 50, canvas.height/2);
+			setTimeout(finishMotion, 10000);
 		}
 	}else{
 	  console.log("DeviceMotionEvent is not supported");
@@ -324,8 +337,20 @@ function motion(event) {
     var y = event.accelerationIncludingGravity.y;
     var z = event.accelerationIncludingGravity.z;
 
-    console.log(x + " " + y + " " + z);
+    var motionArray = [x, y, z];
+    console.log(event.interval);
+
+    motionData["data"].push(motionArray);
 } 
+
+function finishMotion() {
+	window.removeEventListener("devicemotion", motion, true); 
+	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+	context.font = '40px sans-serif';
+	context.fillStyle = "black";
+	context.fillText('Done!', canvas.width/2 - 50, canvas.height/2);
+	$('#next').prop('disabled', false);
+}
 
 
 
@@ -339,6 +364,7 @@ function clearCanvas()
 	timeDraw = 0;
 	clickTimes = [];
 	ft_sel = "";
+	motionData["data"] = new Array();
 
 	if (curTest == "spiral") {
 	  	var spiral_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
@@ -613,6 +639,15 @@ function completeCurrent() {
 	}
 	if (curTest == "dysk") {
 
+		dataBlob = new Blob([JSON.stringify(motionData)]);
+
+		uploadFirebaseData(curTest, dataBlob, ".txt").then(function(snapshot) {
+  			snapshot.ref.getDownloadURL().then(function(downloadURL) {
+  				reportData["restMotion"]["motionURL"] = downloadURL;
+  				updateReport();
+  			});
+  		});
+		clearCanvas();
 	}
 	if (curTest == "audio") {
 
