@@ -358,18 +358,21 @@ function redraw_FT() {
   context.fillStyle ='red';
   if (ft_sel == "left") {
   	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
-  	context.fillStyle ='blue';
+  	context.fillStyle ='red';
   	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
   }
   else if (ft_sel == "right") {
   	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
-  	context.fillStyle ='blue';
+  	context.fillStyle ='red';
   	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
   } else {
   	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
   	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
   }
   
+  context.font = '15px sans-serif';
+  context.fillStyle = "black";
+  context.fillText(clickTimes.length, canvas.width/2, canvas.height/2 - 75);
   
 }
 
@@ -632,7 +635,7 @@ function loadNext() {
 	}
 	else if (curTest == "dysk") {
 		$('#next').prop('disabled', true);
-
+		prepareMotionCanvas();
 	}
 	else if (curTest == "audio") {
 
