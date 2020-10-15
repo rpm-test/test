@@ -300,8 +300,10 @@ function prepareMotionCanvas() {
 	var canvasDiv = document.getElementById('canvasDiv');
 	canvasDiv.innerHTML = "";
 
+	console.log("Preparing motion listener")
+
 	if(window.DeviceMotionEvent){
-	  window.addEventListener("devicemotion", motion, false);
+	  window.addEventListener("devicemotion", motion, true);
 	}else{
 	  console.log("DeviceMotionEvent is not supported");
 	}
@@ -326,6 +328,7 @@ function clearCanvas()
 	clickDrag = [];
 	timeDraw = 0;
 	clickTimes = [];
+	ft_sel = "";
 
 	if (curTest == "spiral") {
 	  	var spiral_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
@@ -372,7 +375,7 @@ function redraw_FT() {
   
   context.font = '15px sans-serif';
   context.fillStyle = "black";
-  context.fillText(clickTimes.length, canvas.width/2, canvas.height/2 - 75);
+  context.fillText(clickTimes.length, canvas.width/2 - 4, canvas.height/2 - 75);
   
 }
 
@@ -655,14 +658,14 @@ function next() {
 
 function restart() {
 	clearCanvas();
-	if (curTest == "ft_left" || curTest == "ft_right") {
+	if (curTest == "ft_left" || curTest == "ft_right" || curTest == "dysk") {
 	  	$('#next').prop('disabled', true);
 	}
 }
 
 function checkLogin(){
 	if (!localStorage.getItem('user')) {
-		window.location.replace("/test/");
+		window.location.replace("./");
 	}
 }
 
