@@ -15,7 +15,7 @@ var clickY = new Array();
 var clickDrag = new Array();
 var paint;
 
-var curTest = "spiral";
+var curTest = "audio";
 var testCount = 0;
 
 var curReport = "";
@@ -64,7 +64,7 @@ var messages = {
 
 var tests = ["spiral", "wave", "ft_left", "ft_right", "dysk", "audio", "updrs"]
 
-
+var tests = ["audio"];
 
 
 function resourceLoaded()
@@ -397,6 +397,7 @@ const handleSuccess = function(stream) {
     const recordedChunks = [];
     const mediaRecorder = new MediaRecorder(stream, options);
 
+
     mediaRecorder.addEventListener('dataavailable', function(e) {
     	console.log("dataavailable: " + shouldStop);
       if (e.data.size > 0) {
@@ -427,6 +428,8 @@ const handleSuccess = function(stream) {
     });
 
     mediaRecorder.start();
+    mediaRecorder.stop();
+    mediaRecorder.start(500);
   };
 
 
