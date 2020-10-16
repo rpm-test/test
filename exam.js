@@ -15,7 +15,7 @@ var clickY = new Array();
 var clickDrag = new Array();
 var paint;
 
-var curTest = "audio";
+var curTest = "spiral";
 var testCount = 0;
 
 var curReport = "";
@@ -64,7 +64,7 @@ var messages = {
 
 var tests = ["spiral", "wave", "ft_left", "ft_right", "dysk", "audio", "updrs"]
 
-var tests = ["audio"];
+
 
 
 function resourceLoaded()
@@ -802,7 +802,7 @@ function checkLogin(){
 window.onload = (event) => {
 	checkLogin();
 	createReport();
-	prepareAudioCanvas();
+	prepareCanvas();
 };
 
 /*
