@@ -802,7 +802,7 @@ function checkLogin(){
 window.onload = (event) => {
 	checkLogin();
 	createReport();
-	prepareCanvas();
+	prepareAudioCanvas();
 };
 
 /*
