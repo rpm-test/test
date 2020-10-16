@@ -427,9 +427,7 @@ const handleSuccess = function(stream) {
 	  window.URL.revokeObjectURL(url);
     });
 
-    mediaRecorder.start();
-    mediaRecorder.stop();
-    mediaRecorder.start(500);
+    mediaRecorder.start(1000);
   };
 
 
