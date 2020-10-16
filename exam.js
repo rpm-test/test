@@ -404,6 +404,12 @@ const handleSuccess = function(stream) {
       }
 
       if(shouldStop === true && stopped === false) {
+      	stream.getTracks().forEach(function(track) {
+	        if (track.readyState == 'live') {
+	            track.stop();
+	        }
+	    });
+
         mediaRecorder.stop();
         stopped = true;
       }
