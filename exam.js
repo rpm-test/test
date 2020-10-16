@@ -32,6 +32,9 @@ var clickTimes = new Array();
 var drawTimer;
 var timeDraw = 0;
 
+var shouldStop = false;
+var stopped = false;
+
 
 var firebaseConfig = {
 	"apiKey": "AIzaSyCGvKK4jxIjZnWdeCJRQwnERv-CnXtyGPs",
@@ -338,6 +341,7 @@ function prepareMotionCanvas() {
 		}
 	}else{
 	  console.log("DeviceMotionEvent is not supported");
+	  $('#next').prop('disabled', false);
 	}
 }
 
@@ -363,6 +367,59 @@ function finishMotion() {
 	context.fillText('Done!', canvas.width/2 - 50, canvas.height/2);
 	$('#next').prop('disabled', false);
 }
+
+function prepareAudioCanvas() {
+	var header = document.getElementsByTagName('header');
+	var canvasDiv = document.getElementById('canvasDiv');
+	canvasDiv.innerHTML = "";
+	canvas = document.createElement('canvas');
+	canvas.setAttribute('width', canvasDiv.offsetWidth);
+	canvas.setAttribute('height', canvasDiv.offsetHeight);
+	canvas.setAttribute('id', 'canvas');
+	canvasDiv.appendChild(canvas);
+	if(typeof G_vmlCanvasManager != 'undefined') {
+		canvas = G_vmlCanvasManager.initElement(canvas);
+	}
+	context = canvas.getContext("2d");
+
+	console.log("Preparing audio listener");
+
+	var constraints = {audio: true, video: false};
+
+	navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(function(err){
+		console.log("Error: " + err.message);
+	})
+}
+
+const handleSuccess = function(stream) {
+    const options = {mimeType: 'audio/webm'};
+    const recordedChunks = [];
+    const mediaRecorder = new MediaRecorder(stream, options);
+
+    mediaRecorder.addEventListener('dataavailable', function(e) {
+      if (e.data.size > 0) {
+        recordedChunks.push(e.data);
+      }
+
+      if(shouldStop === true && stopped === false) {
+        mediaRecorder.stop();
+        stopped = true;
+      }
+    });
+
+    mediaRecorder.addEventListener('stop', function() {
+      var url = URL.createObjectURL(new Blob(recordedChunks));
+      var a = document.createElement("a");
+	  document.body.appendChild(a);
+	  a.style = "display: none";
+	  a.href = url;
+	  a.download = "test.wav";
+	  a.click();
+	  window.URL.revokeObjectURL(url);
+    });
+
+    mediaRecorder.start();
+  };
 
 
 
@@ -599,11 +656,13 @@ function completeCurrent() {
 		}
 
 		dataBlob = new Blob([JSON.stringify(params)]);
+
+		var test = curTest;
 		
-		uploadFirebaseImage(curTest, img).then(function(snapshot) {
+		uploadFirebaseImage(test, img).then(function(snapshot) {
 		  	snapshot.ref.getDownloadURL().then(function(downloadURL) {
 		  		reportData["spiralWave"]["spiral"]["imageURL"] = downloadURL;
-		  		uploadFirebaseData(curTest, dataBlob, ".txt").then(function(snapshot) {
+		  		uploadFirebaseData(test, dataBlob, ".txt").then(function(snapshot) {
 		  			snapshot.ref.getDownloadURL().then(function(downloadURL) {
 		  				reportData["spiralWave"]["spiral"]["statsURL"] = downloadURL;
 		  				updateReport();
@@ -625,11 +684,13 @@ function completeCurrent() {
 		}
 
 		dataBlob = new Blob([JSON.stringify(params)]);
+
+		var test = curTest;
 		
-		uploadFirebaseImage(curTest, img, params).then(function(snapshot) {
+		uploadFirebaseImage(test, img, params).then(function(snapshot) {
 		  	snapshot.ref.getDownloadURL().then(function(downloadURL) {
 		  		reportData["spiralWave"]["wave"]["imageURL"] = downloadURL;
-				uploadFirebaseData(curTest, dataBlob, ".txt").then(function(snapshot) {
+				uploadFirebaseData(test, dataBlob, ".txt").then(function(snapshot) {
 		  			snapshot.ref.getDownloadURL().then(function(downloadURL) {
 		  				reportData["spiralWave"]["wave"]["statsURL"] = downloadURL;
 		  				updateReport();
@@ -662,6 +723,7 @@ function completeCurrent() {
 		clearCanvas();
 	}
 	if (curTest == "audio") {
+		shouldStop = true;
 
 	}
 	if (curTest == "video") {
@@ -698,7 +760,7 @@ function loadNext() {
 		prepareMotionCanvas();
 	}
 	else if (curTest == "audio") {
-
+		prepareAudioCanvas();
 	}
 	else if (curTest == "video") {
 
