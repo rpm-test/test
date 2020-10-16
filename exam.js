@@ -319,7 +319,6 @@ function prepareMotionCanvas() {
 	console.log("Preparing motion listener")
 
 	if(window.DeviceMotionEvent){
-		console.log(window.DeviceMotionEvent.interval);
 		if (typeof( window.DeviceMotionEvent.requestPermission ) === "function") {
 			window.DeviceMotionEvent.requestPermission()
 	            .then( response => {
@@ -392,11 +391,14 @@ function prepareAudioCanvas() {
 }
 
 const handleSuccess = function(stream) {
+	console.log("handleSuccess");
+	console.log(stream);
     const options = {mimeType: 'audio/webm'};
     const recordedChunks = [];
     const mediaRecorder = new MediaRecorder(stream, options);
 
     mediaRecorder.addEventListener('dataavailable', function(e) {
+    	console.log("dataavailable: " + shouldStop);
       if (e.data.size > 0) {
         recordedChunks.push(e.data);
       }
