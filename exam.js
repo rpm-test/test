@@ -35,6 +35,21 @@ var timeDraw = 0;
 var shouldStop = false;
 var stopped = false;
 
+var audioTimer;
+var timeAudio = 0;
+
+
+var leftchannel = [];
+var rightchannel = [];
+var recorder = null;
+var recordingLength = 0;
+var volume = null;
+var mediaStream = null;
+var sampleRate = 48000;
+var audiocontext = null;
+var blob = null;
+var curstream = null;
+
 
 var firebaseConfig = {
 	"apiKey": "AIzaSyCGvKK4jxIjZnWdeCJRQwnERv-CnXtyGPs",
@@ -385,12 +400,67 @@ function prepareAudioCanvas() {
 
 	var constraints = {audio: true, video: false};
 
-	navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(function(err){
+	navigator.mediaDevices.getUserMedia(constraints).then(handleSuccessAudio).catch(function(err){
 		console.log("Error: " + err.message);
 	})
+
+	context.font = '20px sans-serif';
+	context.fillStyle = "black";
+	context.fillText('Listening...', canvas.width/2 - 65, canvas.height/2 - 20);
+
+	audioTimer = setInterval(function(){
+		context.clearRect(context.canvas.width/2 - 10, context.canvas.height/2 - 5, context.canvas.width/2 + 10, context.canvas.height/2 + 5);
+	  	timeAudio++;
+	  	var minutes = timeAudio/60;
+	  	var seconds = timeAudio%60;
+	  	if (minutes < 10) {
+	  		minutes = "0" + minutes;
+	  	}
+	  	if (seconds < 10) {
+	  		seconds = "0" + seconds;
+	  	}
+	  	context.font = '18px Helvetica';
+		context.fillStyle = "black";
+		context.fillText(minutes + ":" + seconds, canvas.width/2 - 8, canvas.height/2);
+	}, 1000);
 }
 
-const handleSuccess = function(stream) {
+const handleSuccessAudio = function(stream) {
+
+	console.log("user consent");
+
+	curstream = stream;
+
+    // creates the audio context
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    audiocontext = new AudioContext();
+
+    // creates an audio node from the microphone incoming stream
+    mediaStream = audiocontext.createMediaStreamSource(stream);
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createScriptProcessor
+    // bufferSize: the onaudioprocess event is called when the buffer is full
+    var bufferSize = 2048;
+    var numberOfInputChannels = 2;
+    var numberOfOutputChannels = 2;
+    if (context.createScriptProcessor) {
+        recorder = audiocontext.createScriptProcessor(bufferSize, numberOfInputChannels, numberOfOutputChannels);
+    } else {
+        recorder = audiocontext.createJavaScriptNode(bufferSize, numberOfInputChannels, numberOfOutputChannels);
+    }
+
+    recorder.onaudioprocess = function (e) {
+        leftchannel.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+        rightchannel.push(new Float32Array(e.inputBuffer.getChannelData(1)));
+        recordingLength += bufferSize;
+    }
+
+    // we connect the recorder
+    mediaStream.connect(recorder);
+    recorder.connect(context.destination);
+
+
+	/*
 	console.log("handleSuccess");
 	console.log(stream);
     const options = {mimeType: 'audio/webm'};
@@ -410,24 +480,38 @@ const handleSuccess = function(stream) {
 	            track.stop();
 	        }
 	    });
-
+      	clearInterval(audioTimer);
         mediaRecorder.stop();
         stopped = true;
       }
     });
 
     mediaRecorder.addEventListener('stop', function() {
+
+    	var dataBlob = new Blob(recordedChunks);
+
+    	uploadFirebaseData("audio", dataBlob, ".webm").then(function(snapshot) {
+  			snapshot.ref.getDownloadURL().then(function(downloadURL) {
+  				reportData["patientNotes"]["audioURL"] = downloadURL;
+  				updateReport();
+  			});
+  		});
+    	
+
+    	
       var url = URL.createObjectURL(new Blob(recordedChunks));
       var a = document.createElement("a");
 	  document.body.appendChild(a);
 	  a.style = "display: none";
 	  a.href = url;
-	  a.download = "test.wav";
+	  a.download = "test.webm";
 	  a.click();
 	  window.URL.revokeObjectURL(url);
     });
 
     mediaRecorder.start(1000);
+
+    */
   };
 
 
@@ -732,8 +816,63 @@ function completeCurrent() {
 		clearCanvas();
 	}
 	if (curTest == "audio") {
-		shouldStop = true;
+		recorder.disconnect(context.destination);
+        mediaStream.disconnect(recorder);
 
+        curstream.getTracks().forEach(function(track) {
+	        if (track.readyState == 'live') {
+	            track.stop();
+	        }
+	    });
+      	clearInterval(audioTimer);
+
+        // we flat the left and right channels down
+        // Float32Array[] => Float32Array
+        var leftBuffer = flattenArray(leftchannel, recordingLength);
+        var rightBuffer = flattenArray(rightchannel, recordingLength);
+        // we interleave both channels together
+        // [left[0],right[0],left[1],right[1],...]
+        var interleaved = interleave(leftBuffer, rightBuffer);
+
+        // we create our wav file
+        var buffer = new ArrayBuffer(44 + interleaved.length * 2);
+        var view = new DataView(buffer);
+
+        // RIFF chunk descriptor
+        writeUTFBytes(view, 0, 'RIFF');
+        view.setUint32(4, 44 + interleaved.length * 2, true);
+        writeUTFBytes(view, 8, 'WAVE');
+        // FMT sub-chunk
+        writeUTFBytes(view, 12, 'fmt ');
+        view.setUint32(16, 16, true); // chunkSize
+        view.setUint16(20, 1, true); // wFormatTag
+        view.setUint16(22, 2, true); // wChannels: stereo (2 channels)
+        view.setUint32(24, sampleRate, true); // dwSamplesPerSec
+        view.setUint32(28, sampleRate * 4, true); // dwAvgBytesPerSec
+        view.setUint16(32, 4, true); // wBlockAlign
+        view.setUint16(34, 16, true); // wBitsPerSample
+        // data sub-chunk
+        writeUTFBytes(view, 36, 'data');
+        view.setUint32(40, interleaved.length * 2, true);
+
+        // write the PCM samples
+        var index = 44;
+        var volume = 1;
+        for (var i = 0; i < interleaved.length; i++) {
+            view.setInt16(index, interleaved[i] * (0x7FFF * volume), true);
+            index += 2;
+        }
+
+        // our final blob
+        dataBlob = new Blob([view], { type: 'audio/wav' });
+        uploadFirebaseData("audio", dataBlob, ".wav").then(function(snapshot) {
+  			snapshot.ref.getDownloadURL().then(function(downloadURL) {
+  				reportData["patientNotes"]["audioURL"] = downloadURL;
+  				updateReport();
+  			});
+  		});
+
+		clearCanvas();
 	}
 	if (curTest == "video") {
 
@@ -781,6 +920,10 @@ function loadNext() {
 
 function next() {
 	completeCurrent();
+	loadNext();
+}
+
+function skip() {
 	loadNext();
 }
 
