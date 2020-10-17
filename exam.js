@@ -877,7 +877,6 @@ function completeCurrent() {
 	if (curTest == "video") {
 
 	}
-	testCount++;
 	if (testCount >= tests.length) {
 		reportData["completed"] = "true";
 		updateReport();
@@ -885,6 +884,7 @@ function completeCurrent() {
 }
 
 function loadNext() {
+	testCount++;
 	curTest = tests[testCount];
 	$("#step").html("Step " + (testCount + 1) + "/7");
 	$("#message").html(messages[curTest]);
