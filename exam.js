@@ -406,10 +406,10 @@ function prepareAudioCanvas() {
 
 	context.font = '20px sans-serif';
 	context.fillStyle = "black";
-	context.fillText('Listening...', canvas.width/2 - 50, canvas.height/2 - 20);
+	context.fillText('Listening...', canvas.width/2 - 40, canvas.height/2 - 25);
 
 	audioTimer = setInterval(function(){
-		context.clearRect(context.canvas.width/2 - 15, context.canvas.height/2 - 10, context.canvas.width/2 + 15, context.canvas.height/2 + 10);
+		context.clearRect(context.canvas.width/2 - 15, context.canvas.height/2 - 15, context.canvas.width/2 + 15, context.canvas.height/2 + 10);
 	  	timeAudio++;
 	  	var minutes = Math.floor(timeAudio/60);
 	  	var seconds = timeAudio%60;
@@ -881,6 +881,37 @@ function completeCurrent() {
 		reportData["completed"] = "true";
 		updateReport();
 	}
+}
+
+function flattenArray(channelBuffer, recordingLength) {
+    var result = new Float32Array(recordingLength);
+    var offset = 0;
+    for (var i = 0; i < channelBuffer.length; i++) {
+        var buffer = channelBuffer[i];
+        result.set(buffer, offset);
+        offset += buffer.length;
+    }
+    return result;
+}
+
+function interleave(leftChannel, rightChannel) {
+    var length = leftChannel.length + rightChannel.length;
+    var result = new Float32Array(length);
+
+    var inputIndex = 0;
+
+    for (var index = 0; index < length;) {
+        result[index++] = leftChannel[inputIndex];
+        result[index++] = rightChannel[inputIndex];
+        inputIndex++;
+    }
+    return result;
+}
+
+function writeUTFBytes(view, offset, string) {
+    for (var i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
 }
 
 function loadNext() {
