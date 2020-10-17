@@ -406,12 +406,12 @@ function prepareAudioCanvas() {
 
 	context.font = '20px sans-serif';
 	context.fillStyle = "black";
-	context.fillText('Listening...', canvas.width/2 - 65, canvas.height/2 - 20);
+	context.fillText('Listening...', canvas.width/2 - 50, canvas.height/2 - 20);
 
 	audioTimer = setInterval(function(){
-		context.clearRect(context.canvas.width/2 - 10, context.canvas.height/2 - 5, context.canvas.width/2 + 10, context.canvas.height/2 + 5);
+		context.clearRect(context.canvas.width/2 - 15, context.canvas.height/2 - 10, context.canvas.width/2 + 15, context.canvas.height/2 + 10);
 	  	timeAudio++;
-	  	var minutes = timeAudio/60;
+	  	var minutes = Math.floor(timeAudio/60);
 	  	var seconds = timeAudio%60;
 	  	if (minutes < 10) {
 	  		minutes = "0" + minutes;
@@ -443,7 +443,7 @@ const handleSuccessAudio = function(stream) {
     var bufferSize = 2048;
     var numberOfInputChannels = 2;
     var numberOfOutputChannels = 2;
-    if (context.createScriptProcessor) {
+    if (audiocontext.createScriptProcessor) {
         recorder = audiocontext.createScriptProcessor(bufferSize, numberOfInputChannels, numberOfOutputChannels);
     } else {
         recorder = audiocontext.createJavaScriptNode(bufferSize, numberOfInputChannels, numberOfOutputChannels);
@@ -457,7 +457,7 @@ const handleSuccessAudio = function(stream) {
 
     // we connect the recorder
     mediaStream.connect(recorder);
-    recorder.connect(context.destination);
+    recorder.connect(audiocontext.destination);
 
 
 	/*
@@ -816,7 +816,7 @@ function completeCurrent() {
 		clearCanvas();
 	}
 	if (curTest == "audio") {
-		recorder.disconnect(context.destination);
+		recorder.disconnect(audiocontext.destination);
         mediaStream.disconnect(recorder);
 
         curstream.getTracks().forEach(function(track) {
