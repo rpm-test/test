@@ -38,6 +38,8 @@ var stopped = false;
 var audioTimer;
 var timeAudio = 0;
 
+var motionTimeout;
+
 
 var leftchannel = [];
 var rightchannel = [];
@@ -70,14 +72,15 @@ var messages = {
 		"wave" : "Use your stylus to trace the wave",
 		"ft_right" : "Use your right index finger to alternately tap both squares",
 		"ft_left" : "Use your left index finger to alternately tap both squares",
-		"dysk" : "Hold your phone at rest for 10 seconds",
-		"audio" : "Tell your doctor about your symptoms and medications",
-		"updrs" : "Sit back arms length and follow directions"
+		"dysk" : "Hold your phone still in your hand for 10 seconds",
+		"audio" : "Tell your doctor anything about your symptoms and side-affects",
+		"updrs" : "Sit back arms length and follow directions",
+		"complete" : "Exam complete!"
 	}
 
 
 
-var tests = ["spiral", "wave", "ft_left", "ft_right", "dysk", "audio", "updrs"]
+var tests = ["spiral", "wave", "ft_left", "ft_right", "dysk", "audio", "complete"]
 
 
 
@@ -267,7 +270,8 @@ function prepareFTCanvas()
 			$('#next').prop('disabled', false);
 			context.font = '40px sans-serif';
 			context.fillStyle = "black";
-  			context.fillText('Done!', canvas.width/2 - 50, canvas.height/2);
+			context.textAlign = "center";
+  			context.fillText('Done!', canvas.width/2, canvas.height/2);
 		} else {
 			redraw_FT();
 		}
@@ -305,7 +309,8 @@ function prepareFTCanvas()
 			$('#next').prop('disabled', false);
 			context.font = '40px sans-serif';
 			context.fillStyle = "black";
-  			context.fillText('Done!', canvas.width/2 - 50, canvas.height/2);
+			context.textAlign = "center";
+  			context.fillText('Done!', canvas.width/2, canvas.height/2);
 		} else {
 			redraw_FT();
 		}
@@ -343,15 +348,16 @@ function prepareMotionCanvas() {
 	                context.font = '20px sans-serif';
 					context.fillStyle = "black";
 					context.fillText('Recording motion...', canvas.width/2 - 75, canvas.height/2);
-	                setTimeout(finishMotion, 10000);
+	                motionTimeout = setTimeout(finishMotion, 10000);
 	            }
 	        })
 		} else {
 			window.addEventListener("devicemotion", motion, true);
 			context.font = '20px sans-serif';
 			context.fillStyle = "black";
-			context.fillText('Recording motion...', canvas.width/2 - 75, canvas.height/2);
-			setTimeout(finishMotion, 10000);
+			context.textAlign = "center";
+			context.fillText('Recording motion...', canvas.width/2, canvas.height/2);
+			motionTimeout = setTimeout(finishMotion, 10000);
 		}
 	}else{
 	  console.log("DeviceMotionEvent is not supported");
@@ -378,7 +384,8 @@ function finishMotion() {
 	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 	context.font = '40px sans-serif';
 	context.fillStyle = "black";
-	context.fillText('Done!', canvas.width/2 - 50, canvas.height/2);
+	context.textAlign = "center";
+	context.fillText('Done!', canvas.width/2, canvas.height/2);
 	$('#next').prop('disabled', false);
 }
 
@@ -406,7 +413,8 @@ function prepareAudioCanvas() {
 
 	context.font = '20px sans-serif';
 	context.fillStyle = "black";
-	context.fillText('Listening...', canvas.width/2 - 40, canvas.height/2 - 25);
+	context.textAlign = "center";
+	context.fillText('Listening...', canvas.width/2, canvas.height/2 - 25);
 
 	audioTimer = setInterval(function(){
 		context.clearRect(context.canvas.width/2 - 15, context.canvas.height/2 - 15, context.canvas.width/2 + 15, context.canvas.height/2 + 10);
@@ -421,7 +429,8 @@ function prepareAudioCanvas() {
 	  	}
 	  	context.font = '18px Helvetica';
 		context.fillStyle = "black";
-		context.fillText(minutes + ":" + seconds, canvas.width/2 - 8, canvas.height/2);
+		context.textAlign = "center";
+		context.fillText(minutes + ":" + seconds, canvas.width/2, canvas.height/2);
 	}, 1000);
 }
 
@@ -515,6 +524,21 @@ const handleSuccessAudio = function(stream) {
   };
 
 
+ function prepareSuccessView() {
+ 	$("footer").hide();
+ 	var header = document.getElementsByTagName('header');
+	var canvasDiv = document.getElementById('canvasDiv');
+	canvasDiv.innerHTML = "";
+	backButton = document.createElement('button');
+	backButton.className = "btn btn-primary btn-lg"
+	backButton.setAttribute('id', 'backButton');
+	backButton.setAttribute('onclick', 'back()');
+	backButton.innerHTML = "Back to Home"
+	canvasDiv.className += " justify-content-center";
+	canvasDiv.appendChild(backButton);
+ }
+
+
 
 
 function clearCanvas()
@@ -573,7 +597,8 @@ function redraw_FT() {
   
   context.font = '15px sans-serif';
   context.fillStyle = "black";
-  context.fillText(clickTimes.length, canvas.width/2 - 4, canvas.height/2 - 75);
+  context.textAlign = "center";
+  context.fillText(clickTimes.length, canvas.width/2, canvas.height/2 - 75);
   
 }
 
@@ -614,6 +639,37 @@ function redraw(drawBackground){
      context.closePath();
      context.stroke();
   }
+}
+
+function flattenArray(channelBuffer, recordingLength) {
+    var result = new Float32Array(recordingLength);
+    var offset = 0;
+    for (var i = 0; i < channelBuffer.length; i++) {
+        var buffer = channelBuffer[i];
+        result.set(buffer, offset);
+        offset += buffer.length;
+    }
+    return result;
+}
+
+function interleave(leftChannel, rightChannel) {
+    var length = leftChannel.length + rightChannel.length;
+    var result = new Float32Array(length);
+
+    var inputIndex = 0;
+
+    for (var index = 0; index < length;) {
+        result[index++] = leftChannel[inputIndex];
+        result[index++] = rightChannel[inputIndex];
+        inputIndex++;
+    }
+    return result;
+}
+
+function writeUTFBytes(view, offset, string) {
+    for (var i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
 }
 
 
@@ -877,47 +933,14 @@ function completeCurrent() {
 	if (curTest == "video") {
 
 	}
-	if (testCount >= tests.length) {
-		reportData["completed"] = "true";
-		updateReport();
-	}
 }
 
-function flattenArray(channelBuffer, recordingLength) {
-    var result = new Float32Array(recordingLength);
-    var offset = 0;
-    for (var i = 0; i < channelBuffer.length; i++) {
-        var buffer = channelBuffer[i];
-        result.set(buffer, offset);
-        offset += buffer.length;
-    }
-    return result;
-}
 
-function interleave(leftChannel, rightChannel) {
-    var length = leftChannel.length + rightChannel.length;
-    var result = new Float32Array(length);
-
-    var inputIndex = 0;
-
-    for (var index = 0; index < length;) {
-        result[index++] = leftChannel[inputIndex];
-        result[index++] = rightChannel[inputIndex];
-        inputIndex++;
-    }
-    return result;
-}
-
-function writeUTFBytes(view, offset, string) {
-    for (var i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
-    }
-}
 
 function loadNext() {
 	testCount++;
 	curTest = tests[testCount];
-	$("#step").html("Step " + (testCount + 1) + "/7");
+	$("#step").html("Step " + (testCount + 1) + "/6");
 	$("#message").html(messages[curTest]);
 	if (testCount == tests.length - 1) {
 		$("#next").html("Done");
@@ -939,13 +962,16 @@ function loadNext() {
 		prepareMotionCanvas();
 	}
 	else if (curTest == "audio") {
+		clearTimeout(motionTimeout);
 		prepareAudioCanvas();
 	}
 	else if (curTest == "video") {
 
 	}
-	else {
-
+	else if (curTest == "complete"){
+		reportData["completed"] = "true";
+		updateReport();
+		prepareSuccessView();
 	}
 }
 
@@ -963,6 +989,10 @@ function restart() {
 	if (curTest == "ft_left" || curTest == "ft_right" || curTest == "dysk") {
 	  	$('#next').prop('disabled', true);
 	}
+}
+
+function back() {
+	window.location.replace("./");
 }
 
 function checkLogin(){
