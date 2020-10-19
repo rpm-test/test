@@ -683,56 +683,34 @@ function createReport() {
 	reportData = {
 		"created": firebase.firestore.Timestamp.now(),
 		"overview": {
-			"medicationTimes": "",
-			"tremorScore": "",
-			"bradykinesiaScore": "",
-			"dyskinesiaScore": ""
 		},
 		"spiralWave": {
 			"spiral": {
 				"imageURL": "",
 				"statsURL": "",
-				"completionTime": "",
-				"tremorScore": "",
-				"bradykinesiaScore": ""
 			},
 			"wave": {
 				"imageURL": "",
 				"statsURL": "",
-				"completionTime": "",
-				"tremorScore": "",
-				"bradykinesiaScore": ""
 			},
 			"combined": {
-				"completionTime": "",
-				"tremorScore": "",
-				"bradykinesiaScore": ""
 			}
 		},
 		"fingerTapping": {
 			"left": {
 				"tapTimes": "",
-				"averageTimeBetweenTaps": "",
-				"bradykinesiaScore": ""
 			},
 			"right": {
 				"tapTimes": "",
-				"averageTimeBetweenTaps": "",
-				"bradykinesiaScore": ""
 			},
 			"combined": {
-				"averageTimeBetweenTaps": "",
-				"bradykinesiaScore": ""
 			}
 		},
 		"restMotion": {
 			"motionURL": "",
-			"powerData": "",
-			"dyskinesiaScore": ""
 		},
 		"patientNotes": {
 			"audioURL": "",
-			"transcript": ""
 		},
 		"updrs": {
 			"videoURL": "",
