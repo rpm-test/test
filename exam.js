@@ -692,8 +692,6 @@ function createReport() {
 			"wave": {
 				"imageURL": "",
 				"statsURL": "",
-			},
-			"combined": {
 			}
 		},
 		"fingerTapping": {
@@ -702,8 +700,6 @@ function createReport() {
 			},
 			"right": {
 				"tapTimes": "",
-			},
-			"combined": {
 			}
 		},
 		"restMotion": {
@@ -745,7 +741,7 @@ function updateReport() {
 	.doc(user["id"])
 	.collection('reports')
 	.doc(curReport)
-	.set(reportData)
+	.set(reportData, {merge: true})
 	.then(function(docRef) {
 	    console.log("updated")
 	})
