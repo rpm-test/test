@@ -692,9 +692,9 @@ function createReport() {
 			"spiral": {
 				"imageURL": "",
 				"statsURL": "",
-				"completionTime": 0,
-				"tremorScore": 0,
-				"bradykinesiaScore": 0
+				"completionTime": "",
+				"tremorScore": "",
+				"bradykinesiaScore": ""
 			},
 			"wave": {
 				"imageURL": "",
