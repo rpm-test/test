@@ -682,8 +682,6 @@ function createReport() {
 
 	reportData = {
 		"created": firebase.firestore.Timestamp.now(),
-		"overview": {
-		},
 		"spiralWave": {
 			"spiral": {
 				"imageURL": "",
