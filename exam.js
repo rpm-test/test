@@ -230,8 +230,8 @@ function prepareFTCanvas()
 	context = canvas.getContext("2d");
 
 	context.fillStyle ='red';
-  	context.fillRect(canvas.width/2 - 75, canvas.height/2 - 25, 50, 50);
-  	context.fillRect(canvas.width/2 + 25, canvas.height/2 - 25, 50, 50);
+  	context.fillRect(canvas.width/2 - 125, canvas.height/2 - 50, 100, 100);
+  	context.fillRect(canvas.width/2 + 25, canvas.height/2 - 50, 100, 100);
 	
 
 	window.addEventListener('resize', resizeCanvas, false);
@@ -248,7 +248,7 @@ function prepareFTCanvas()
 	  var mouseY = e.pageY - this.offsetTop;
 			
 	  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop - header[0].offsetHeight);
-	  if (mouseX > canvas.width/2 - 75 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
+	  if (mouseX > canvas.width/2 - 125 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 50 &&  mouseY < canvas.height/2 + 50) {
 	  		if (ft_sel !== "left") {
 	  			var d = new Date();
 				var n = d.getTime();
@@ -256,7 +256,7 @@ function prepareFTCanvas()
 	  			ft_sel = "left";
 	  		}
 						
-		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 75 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
+		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 125 && mouseY > canvas.height/2 - 50 &&  mouseY < canvas.height/2 + 50) {
 			if (ft_sel !== "right") {
 	  			var d = new Date();
 				var n = d.getTime();
@@ -287,7 +287,7 @@ function prepareFTCanvas()
 		
 		addClick(mouseX, mouseY, false);
 
-		if (mouseX > canvas.width/2 - 75 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
+		if (mouseX > canvas.width/2 - 125 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 50 &&  mouseY < canvas.height/2 + 50) {
 	  		if (ft_sel !== "left") {
 	  			var d = new Date();
 				var n = d.getTime();
@@ -295,7 +295,7 @@ function prepareFTCanvas()
 	  			ft_sel = "left";
 	  		}
 						
-		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 75 && mouseY > canvas.height/2 - 25 &&  mouseY < canvas.height/2 + 25) {
+		} else if (mouseX > canvas.width/2 + 25 && mouseX < canvas.width/2 + 125 && mouseY > canvas.height/2 - 50 &&  mouseY < canvas.height/2 + 50) {
 			if (ft_sel !== "right") {
 	  			var d = new Date();
 				var n = d.getTime();
@@ -581,6 +581,9 @@ function addClick(x, y, dragging)
 function redraw_FT() {
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
   context.fillStyle ='red';
+  context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 50, 100, 100);
+  context.fillRect(context.canvas.width/2 - 125, context.canvas.height/2 - 50, 100, 100);
+  /*
   if (ft_sel == "left") {
   	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
   	context.fillStyle ='red';
@@ -594,11 +597,12 @@ function redraw_FT() {
   	context.fillRect(context.canvas.width/2 + 25, context.canvas.height/2 - 25, 50, 50);
   	context.fillRect(context.canvas.width/2 - 75, context.canvas.height/2 - 25, 50, 50);
   }
+	*/
   
-  context.font = '15px sans-serif';
+  context.font = '20px sans-serif';
   context.fillStyle = "black";
   context.textAlign = "center";
-  context.fillText(clickTimes.length, canvas.width/2, canvas.height/2 - 75);
+  context.fillText(clickTimes.length, canvas.width/2, canvas.height/2 - 100);
   
 }
 
