@@ -223,6 +223,7 @@ function prepareFTCanvas()
 	canvas.setAttribute('width', canvasDiv.offsetWidth);
 	canvas.setAttribute('height', canvasDiv.offsetHeight);
 	canvas.setAttribute('id', 'canvas');
+	canvas.setAttribute('onclick', 'emptyClick(event)');
 	canvasDiv.appendChild(canvas);
 	if(typeof G_vmlCanvasManager != 'undefined') {
 		canvas = G_vmlCanvasManager.initElement(canvas);
@@ -281,6 +282,7 @@ function prepareFTCanvas()
 
 	canvas.addEventListener("touchstart", function(e)
 	{
+		e.preventDefault();
 		// Mouse down location
 		var mouseX = (e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft,
 			mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop - header[0].offsetHeight;
@@ -322,6 +324,10 @@ function prepareFTCanvas()
 	}, false);
 
 
+}
+
+function emptyClick(e){
+	e.preventDefault();
 }
 
 function prepareMotionCanvas() {
