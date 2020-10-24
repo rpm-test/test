@@ -564,8 +564,8 @@ function clearCanvas()
 	        context.canvas.height / 2 -  wave_size / 2, wave_size, wave_size);
 	  } else if (curTest == "ft_left" || curTest == "ft_right") {
 	  	context.fillStyle ='red';
-  		context.fillRect(canvas.width/2 - 75, canvas.height/2 - 25, 50, 50);
-  		context.fillRect(canvas.width/2 + 25, canvas.height/2 - 25, 50, 50);
+  		context.fillRect(canvas.width/2 - 125, canvas.height/2 - 50, 100, 100);
+  		context.fillRect(canvas.width/2 + 25, canvas.height/2 - 50, 100, 100);
 	  }
 
 }
