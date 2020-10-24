@@ -279,13 +279,15 @@ function prepareFTCanvas()
 	  
 	});
 
-	canvas.addEventListener("touchend", function(e)
+	canvas.addEventListener("touchstart", function(e)
 	{
 		// Mouse down location
 		var mouseX = (e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft,
 			mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop - header[0].offsetHeight;
 		
 		addClick(mouseX, mouseY, false);
+
+		console.log("TOUCH: " + clickTimes.length);
 
 		if (mouseX > canvas.width/2 - 125 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 50 &&  mouseY < canvas.height/2 + 50) {
 	  		if (ft_sel !== "left") {
