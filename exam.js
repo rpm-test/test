@@ -279,7 +279,7 @@ function prepareFTCanvas()
 	  
 	});
 
-	canvas.addEventListener("touchstart", function(e)
+	canvas.addEventListener("touchend", function(e)
 	{
 		// Mouse down location
 		var mouseX = (e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft,
