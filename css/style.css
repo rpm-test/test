@@ -8,6 +8,7 @@ html, body {
 	height:100%; 
 	font-family: Helvetica;
 	font-weight: 300;
+	touch-action: manipulation;
 }
 
 /*
@@ -28,6 +29,7 @@ main {
 	height:72vh;
 	width: 100vw;
 	background-color: white;
+	touch-action: manipulation;
 }
 
 footer {
@@ -58,6 +60,7 @@ canvas {
 	background-position: center;
 	background-size: 45vmax 90%;
 	background-repeat: no-repeat;*/
+	touch-action: manipulation;
 }
 
 
