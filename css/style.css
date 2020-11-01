@@ -68,3 +68,7 @@ canvas {
     opacity: 0.2;
 }
 
+.center { 
+    margin: 0 auto !important;
+}
+

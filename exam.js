@@ -435,6 +435,7 @@ function prepareVideoCanvas() {
 	videoInput = document.createElement('input');
 	videoInput.setAttribute('type', 'file');
 	videoInput.setAttribute('accept', 'video/*;capture=camcorder');
+	videoInput.className = "center";
 	canvasDiv.appendChild(videoInput);
 }
 
