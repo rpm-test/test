@@ -423,7 +423,8 @@ function prepareInputExam() {
 	startVideo.className = "btn btn-primary btn-lg"
 	startVideo.setAttribute('id', 'startVideo');
 	startVideo.setAttribute('onclick', 'prepareVideoCanvas()');
-	startVideo.innerHTML = "Start Video Recording"
+	startVideo.innerHTML = "Start Video Recording";
+	startVideo.style.marginTop = "10px";
 	canvasDiv.appendChild(startVideo);
 }
 
@@ -431,7 +432,7 @@ function prepareVideoCanvas() {
 	var header = document.getElementsByTagName('header');
 	var canvasDiv = document.getElementById('canvasDiv');
 	canvasDiv.innerHTML = "";
-	videoInput = document.createElement('button');
+	videoInput = document.createElement('input');
 	videoInput.setAttribute('type', 'file');
 	videoInput.setAttribute('accept', 'video/*;capture=camcorder');
 	canvasDiv.appendChild(videoInput);
