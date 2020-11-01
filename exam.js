@@ -73,7 +73,7 @@ var messages = {
 		"ft_right" : "Use your right index finger to alternately tap both squares",
 		"ft_left" : "Use your left index finger to alternately tap both squares",
 		"dysk" : "Hold your phone still in your hand for 10 seconds",
-		"audio" : "Send your doctor a message (symptoms/side-affects)",
+		"audio" : "Send your doctor a message about any symptoms",
 		"updrs" : "Sit back arms length and follow directions",
 		"complete" : "Exam complete!"
 	}
@@ -419,18 +419,22 @@ function prepareInputExam() {
 	startAudio.setAttribute('onclick', 'prepareAudioCanvas()');
 	startAudio.innerHTML = "Start Audio Recording"
 	canvasDiv.appendChild(startAudio);
-	startVideo = document.createElement('input');
+	startVideo = document.createElement('button');
 	startVideo.className = "btn btn-primary btn-lg"
 	startVideo.setAttribute('id', 'startVideo');
-	startVideo.setAttribute('type', 'file');
-	startVideo.setAttribute('accept', 'video/*;capture=camcorder');
 	startVideo.setAttribute('onclick', 'prepareVideoCanvas()');
 	startVideo.innerHTML = "Start Video Recording"
 	canvasDiv.appendChild(startVideo);
 }
 
 function prepareVideoCanvas() {
-
+	var header = document.getElementsByTagName('header');
+	var canvasDiv = document.getElementById('canvasDiv');
+	canvasDiv.innerHTML = "";
+	videoInput = document.createElement('button');
+	videoInput.setAttribute('type', 'file');
+	videoInput.setAttribute('accept', 'video/*;capture=camcorder');
+	canvasDiv.appendChild(videoInput);
 }
 
 
