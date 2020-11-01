@@ -73,7 +73,7 @@ var messages = {
 		"ft_right" : "Use your right index finger to alternately tap both squares",
 		"ft_left" : "Use your left index finger to alternately tap both squares",
 		"dysk" : "Hold your phone still in your hand for 10 seconds",
-		"audio" : "Tell your doctor anything about your symptoms and side-affects",
+		"audio" : "Send your doctor a message (symptoms/side-affects)",
 		"updrs" : "Sit back arms length and follow directions",
 		"complete" : "Exam complete!"
 	}
@@ -289,8 +289,6 @@ function prepareFTCanvas()
 		
 		addClick(mouseX, mouseY, false);
 
-		console.log("TOUCH: " + clickTimes.length);
-
 		if (mouseX > canvas.width/2 - 125 && mouseX < canvas.width/2 - 25 && mouseY > canvas.height/2 - 50 &&  mouseY < canvas.height/2 + 50) {
 	  		if (ft_sel !== "left") {
 	  			var d = new Date();
@@ -328,6 +326,19 @@ function prepareFTCanvas()
 
 function emptyClick(e){
 	e.preventDefault();
+}
+
+function prepareMotionExam() {
+	var header = document.getElementsByTagName('header');
+	var canvasDiv = document.getElementById('canvasDiv');
+	canvasDiv.innerHTML = "";
+	startButton = document.createElement('button');
+	startButton.className = "btn btn-primary btn-lg"
+	startButton.setAttribute('id', 'startButton');
+	startButton.setAttribute('onclick', 'prepareMotionCanvas()');
+	startButton.innerHTML = "Start Motion Exam"
+	canvasDiv.className += " justify-content-center align-items-center";
+	canvasDiv.appendChild(startButton);
 }
 
 function prepareMotionCanvas() {
@@ -396,6 +407,33 @@ function finishMotion() {
 	context.fillText('Done!', canvas.width/2, canvas.height/2);
 	$('#next').prop('disabled', false);
 }
+
+function prepareInputExam() {
+	var header = document.getElementsByTagName('header');
+	var canvasDiv = document.getElementById('canvasDiv');
+	canvasDiv.innerHTML = "";
+	canvasDiv.className += " justify-content-center align-items-center d-flex flex-column";
+	startAudio = document.createElement('button');
+	startAudio.className = "btn btn-primary btn-lg"
+	startAudio.setAttribute('id', 'startAudio');
+	startAudio.setAttribute('onclick', 'prepareAudioCanvas()');
+	startAudio.innerHTML = "Start Audio Recording"
+	canvasDiv.appendChild(startAudio);
+	startVideo = document.createElement('input');
+	startVideo.className = "btn btn-primary btn-lg"
+	startVideo.setAttribute('id', 'startVideo');
+	startVideo.setAttribute('type', 'file');
+	startVideo.setAttribute('accept', 'video/*;capture=camcorder');
+	startVideo.setAttribute('onclick', 'prepareVideoCanvas()');
+	startVideo.innerHTML = "Start Video Recording"
+	canvasDiv.appendChild(startVideo);
+}
+
+function prepareVideoCanvas() {
+
+}
+
+
 
 function prepareAudioCanvas() {
 	var header = document.getElementsByTagName('header');
@@ -560,6 +598,8 @@ function clearCanvas()
 	ft_sel = "";
 	motionData["data"] = new Array();
 
+	
+
 	if (curTest == "spiral") {
 	  	var spiral_size = context.canvas.height > context.canvas.width ? context.canvas.width : context.canvas.height;
 
@@ -575,6 +615,37 @@ function clearCanvas()
   		context.fillRect(canvas.width/2 - 125, canvas.height/2 - 50, 100, 100);
   		context.fillRect(canvas.width/2 + 25, canvas.height/2 - 50, 100, 100);
 	  }
+	 else if (curTest == "dysk") {
+	 	finishMotion()
+	 	prepareMotionExam()
+	 }
+	 else if (curTest == "audio") {
+	 	if (audiocontext) {
+	 		recorder.disconnect(audiocontext.destination);
+	        mediaStream.disconnect(recorder);
+
+	        curstream.getTracks().forEach(function(track) {
+		        if (track.readyState == 'live') {
+		            track.stop();
+		        }
+		    });
+	      	clearInterval(audioTimer);
+	 	}
+	 	
+
+      	leftchannel = [];
+		rightchannel = [];
+		recorder = null;
+		recordingLength = 0;
+		volume = null;
+		mediaStream = null;
+		sampleRate = 48000;
+		audiocontext = null;
+		blob = null;
+		curstream = null;
+
+      	prepareInputExam();
+	 }
 
 }
 
@@ -943,11 +1014,11 @@ function loadNext() {
 	}
 	else if (curTest == "dysk") {
 		$('#next').prop('disabled', true);
-		prepareMotionCanvas();
+		prepareMotionExam();
 	}
 	else if (curTest == "audio") {
 		clearTimeout(motionTimeout);
-		prepareAudioCanvas();
+		prepareInputExam();
 	}
 	else if (curTest == "video") {
 
