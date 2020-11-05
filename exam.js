@@ -1043,6 +1043,7 @@ function next() {
 }
 
 function skip() {
+	$('#next').prop('disabled', false);
 	loadNext();
 }
 
