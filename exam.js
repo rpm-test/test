@@ -82,7 +82,16 @@ var messages = {
 
 var tests = ["spiral", "wave", "ft_left", "ft_right", "dysk", "audio", "complete"]
 
+console.log(firebase.auth().currentUser)
 
+firebase.auth().onAuthStateChanged(function(user) {
+	if (user) {
+	  console.log(user)
+	} else {
+	  // No user is signed in.
+	  console.log("USER NOT LOGGED IN");
+	}
+});
 
 
 function resourceLoaded()
