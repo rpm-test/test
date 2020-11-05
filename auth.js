@@ -79,19 +79,19 @@ function checkLogin(){
   //This function runs everytime the auth state changes. Use to verify if the user is logged in
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
-      login()
+      login(user.phoneNumber)
     } else {
       // No user is signed in.
       console.log("USER NOT LOGGED IN");
     }
   });
 
-function login() {
+function login(phoneNumber) {
 
-	//Send http request to cloud function login
-
+	console.log(phoneNumber);
+	
 	db.collectionGroup('patients')
-	  .where('phone', '==', $("#phone").val())
+	  .where('phone', '==', phoneNumber.substr(2))
 	  .get().then((querySnapshot) => {
 	    querySnapshot.forEach((doc) => {
 	        //console.log(`${doc.id} => ${doc.data()}`);
